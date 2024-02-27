@@ -3,7 +3,7 @@ GERBERS_FRONT := $(addprefix build/,$(addsuffix -F_Cu.gbr,$(basename $(PCBS))))
 GERBERS_BACK := $(addprefix build/,$(addsuffix -B_Cu.gbr,$(basename $(PCBS))))
 GERBERS_EDGE_CUTS := $(addprefix build/,$(addsuffix -Edge_Cuts.gbr,$(basename $(PCBS))))
 GERBERS_ALL := $(GERBERS_FRONT) $(GERBERS_BACK) $(GERBERS_EDGE_CUTS)
-GCODE := $(addsuffix .ngc,$(basename $(GERBERS_FRONT)))
+GCODE := $(addsuffix _front.ngc,$(basename $(GERBERS_FRONT)))
 
 LAYERS := F.Cu,B.Cu,F.Silkscreen,B.Silkscreen,Edge.Cuts
 
@@ -25,7 +25,7 @@ DRILL_SPEED := 5600
 
 .PHONY := clean pcbs gcode
 
-all: gcode
+all: xgcode
 
 gcode: SHELL:=zsh
 gcode: gerbers
@@ -54,6 +54,36 @@ gcode: gerbers
 			--drill-feed $(DRILL_FEED) \
 			--drill-speed $(DRILL_SPEED); \
   	done
+
+xgcode: SHELL=zsh
+xgcode: gerbers $(GCODE)
+
+%_front.ngc:%.gbr
+	echo "Render gcode: $@ $^"
+		gbr=$^ \
+  		base=$${gbr/-F_Cu.gbr}; \
+  		echo "base $$base"; \
+		$(pcb2gcode) \
+			--metric 1\
+			--basename $$gbr:t:r \
+			--output-dir $$gbr:h \
+			--front $$gbr \
+			--back $${base}-B_Cu.gbr \
+			--mill-diameters=$(MILL_DIAMETERS) \
+			--isolation-width=$(ISOLATION_WIDTH) \
+			--zwork $(ZWORK) \
+			--mill-feed $(MILL_FEED) \
+			--mill-vertfeed $(MILL_VERTFEED) \
+			--mill-speed $(MILL_SPEED) \
+			--drill $${base}.drl \
+			--milldrill-output $${base}-milldrill.ngc \
+			--milldrill-diameter ${MILLDRILL_DIAMETER} \
+			--zsafe $(ZSAFE) \
+			--zchange $(ZCHANGE) \
+			--zdrill $(ZDRILL) \
+			--zmilldrill $(ZDRILL) \
+			--drill-feed $(DRILL_FEED) \
+			--drill-speed $(DRILL_SPEED); \
 
 gerbers: $(GERBERS_ALL)
 
