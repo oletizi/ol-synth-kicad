@@ -1,17 +1,12 @@
-
-#PCBS := $(basename $(wildcard ol-synth-teensy-board/*.kicad_pcb)-B_CU.gbr)
 PCBS := $(wildcard ol-synth-teensy-board/*.kicad_pcb)
-GERBERS := $(addsuffix -F_Cu.gbr,$(basename $(PCBS)))
+GERBERS_FRONT := $(addprefix build/,$(addsuffix .gbr,$(basename $(PCBS))))
+#GERBERS_FRONT := $(addsuffix .gbr,$(basename $(PCBS)))
 
-thingy:
-	echo "PCBS: $(PCBS)"
-	echo "GERBERS: $(GERBERS)"
+gerbers: $(GERBERS_FRONT)
 
-%-F_Cu.gbr: %.kicad_pcb
-	echo "Generate gerber file"
+build/%.gbr: %.kicad_pcb
+	echo "Generate gerbers: $@ from $^"
+
 
 pcbs: $(PCBS)
 	echo "PCBS: $(PCBS)"
-
-gerbers: $(GERBERS)
-	echo "GERBERS: $(GERBERS)"
