@@ -1,4 +1,5 @@
-BASENAME="ol-synth-midi-board"
+#BASENAME="ol-synth-midi-board"
+BASENAME=$1
 SOURCEDIR="gerber"
 OUTDIR="gcode"
 FRONT=${SOURCE_DIR}/${BASENAME}-F_Cu.gbr
