@@ -63,13 +63,9 @@ xgcode: gerbers $(GCODE)
 		--drill-speed $(DRILL_SPEED);
 
 gcode-post: xgcode
-	prune = "^G04.*"
 	for gc in build/**/*.ngc; do \
-  		for pat in $$prine; do \
-			cmd="sed -i -e s/$$pat/DELETE_ME/g $$gc"; \
-			echo $$cmd; \
-			$$cmd; \
-  		done; \
+  		echo "Postprocessing: $$gc"; \
+		sed -i -e "s/^\(G04.*\)/\(Suppressed: \1\)/g"  $$gc; \
 	done; \
 
 gerbers: $(GERBERS_ALL)
