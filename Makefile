@@ -1,4 +1,6 @@
-PCBS := $(wildcard ol-synth-teensy-board/*.kicad_pcb)
+SHELL := zsh
+#PCBS := $(wildcard ol-synth-teensy-board/*.kicad_pcb)
+PCBS := $(shell echo src/**/*.kicad_pcb)
 GERBERS_FRONT := $(addprefix build/,$(addsuffix -F_Cu.gbr,$(basename $(PCBS))))
 GERBERS_BACK := $(addprefix build/,$(addsuffix -B_Cu.gbr,$(basename $(PCBS))))
 GERBERS_EDGE_CUTS := $(addprefix build/,$(addsuffix -Edge_Cuts.gbr,$(basename $(PCBS))))
@@ -15,7 +17,7 @@ MILLDRILL_DIAMETER := 1
 ISOLATION_WIDTH := 1
 ZWORK := -0.1
 MILL_FEED := 200
-MILL_VERTFEED := 50
+MILL_VERTFEED := 200
 MILL_SPEED := 5600
 ZSAFE := 10
 ZCHANGE := 10
@@ -34,7 +36,7 @@ gcode: gerbers
   		echo "base $$base"; \
 		$(pcb2gcode) \
 			--metric 1\
-			--basename $$gbr:t:r \
+			--basename $$base:t:r \
 			--output-dir $$gbr:h \
 			--front $$gbr \
 			--back $${base}-B_Cu.gbr \
@@ -44,6 +46,7 @@ gcode: gerbers
 			--mill-feed $(MILL_FEED) \
 			--mill-vertfeed $(MILL_VERTFEED) \
 			--mill-speed $(MILL_SPEED) \
+			--outline $$base-Edge_Cuts.gbr \
 			--drill $${base}.drl \
 			--milldrill-output $${base}-milldrill.ngc \
 			--milldrill-diameter ${MILLDRILL_DIAMETER} \
@@ -59,31 +62,41 @@ xgcode: SHELL=zsh
 xgcode: gerbers $(GCODE)
 
 %_front.ngc:%.gbr
-	echo "Render gcode: $@ $^"
-		gbr=$^ \
-  		base=$${gbr/-F_Cu.gbr}; \
-  		echo "base $$base"; \
-		$(pcb2gcode) \
-			--metric 1\
-			--basename $$gbr:t:r \
-			--output-dir $$gbr:h \
-			--front $$gbr \
-			--back $${base}-B_Cu.gbr \
-			--mill-diameters=$(MILL_DIAMETERS) \
-			--isolation-width=$(ISOLATION_WIDTH) \
-			--zwork $(ZWORK) \
-			--mill-feed $(MILL_FEED) \
-			--mill-vertfeed $(MILL_VERTFEED) \
-			--mill-speed $(MILL_SPEED) \
-			--drill $${base}.drl \
-			--milldrill-output $${base}-milldrill.ngc \
-			--milldrill-diameter ${MILLDRILL_DIAMETER} \
-			--zsafe $(ZSAFE) \
-			--zchange $(ZCHANGE) \
-			--zdrill $(ZDRILL) \
-			--zmilldrill $(ZDRILL) \
-			--drill-feed $(DRILL_FEED) \
-			--drill-speed $(DRILL_SPEED); \
+	echo "Render gcode: $@ $^"; \
+	gbr=$^; \
+	base=$${gbr/-F_Cu.gbr}; \
+	echo "base $$base"; \
+	$(pcb2gcode) \
+		--metric 1\
+		--basename $$gbr:t:r \
+		--output-dir $$gbr:h \
+		--front $$gbr \
+		--back $${base}-B_Cu.gbr \
+		--mill-diameters=$(MILL_DIAMETERS) \
+		--isolation-width=$(ISOLATION_WIDTH) \
+		--zwork $(ZWORK) \
+		--mill-feed $(MILL_FEED) \
+		--mill-vertfeed $(MILL_VERTFEED) \
+		--mill-speed $(MILL_SPEED) \
+		--drill $${base}.drl \
+		--milldrill-output $${base}-milldrill.ngc \
+		--milldrill-diameter ${MILLDRILL_DIAMETER} \
+		--zsafe $(ZSAFE) \
+		--zchange $(ZCHANGE) \
+		--zdrill $(ZDRILL) \
+		--zmilldrill $(ZDRILL) \
+		--drill-feed $(DRILL_FEED) \
+		--drill-speed $(DRILL_SPEED);
+
+gcode-post: xgcode
+	prune = "^G04.*"
+	for gc in build/**/*.ngc; do \
+  		for pat in $$prine; do \
+			cmd="sed -i -e s/$$pat/DELETE_ME/g $$gc"; \
+			echo $$cmd; \
+			$$cmd; \
+  		done; \
+	done; \
 
 gerbers: $(GERBERS_ALL)
 
