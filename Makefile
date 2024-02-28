@@ -40,6 +40,7 @@ xgcode: gerbers $(GCODE)
 	$(pcb2gcode) \
 		--metric=1 \
 		--metricoutput=1 \
+		--nom6=1 \
 		--basename $$gbr:t:r \
 		--output-dir $$gbr:h \
 		--front $$gbr \
