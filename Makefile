@@ -49,6 +49,7 @@ xgcode: gerbers $(GCODE)
 	echo "base $$base"; \
 	$(pcb2gcode) \
 		--ignore-warnings \
+		--zero-start \
 		--metric=1 \
 		--metricoutput=1 \
 		--nom6=1 \
@@ -56,7 +57,7 @@ xgcode: gerbers $(GCODE)
 		--output-dir $$gbr:h \
 		--front $$gbr \
 		--back $${base}-B_Cu.gbr \
-		--mirror-axis=1 \
+		--mirror-axis 0 \
 		--mill-diameters=$(MILL_DIAMETERS) \
 		--isolation-width=$(ISOLATION_WIDTH) \
 		--zwork $(ZWORK) \
@@ -94,7 +95,7 @@ gerbers: $(GERBERS_ALL)
 build/%-F_Cu.gbr: %.kicad_pcb
 	echo "Generate gerbers: $@ from $^ with $(kicad)"
 	mkdir -p $(dir $@)
-	$(kicad) pcb export gerbers --output $(dir $@) --layers $(LAYERS) --no-protel-ext $^
+	$(kicad) pcb export gerbers --output $(dir $@) --layers $(LAYERS) --no-protel-ext --no-x2 $^
 	$(kicad) pcb export drill --drill-origin plot -u mm --output $(dir $@) $^
 
 pcbs: $(PCBS)
