@@ -1,5 +1,18 @@
 {
   "dependencies": {
+    "@oneisland/gcode": "^0.0.2",
     "cncjs": "^1.10.3"
-  }
+  },
+  "name": "ol-synth-kicad",
+  "description": "## TODO - [X] Makefile to build stuff like Gerber and gcode - [X] CLI for Kicad to export Gerber and Excellon files for PCB: https://docs.kicad.org/7.0/en/cli/cli.html",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "src/javascript/main.js",
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "gcode": "node src/javascript/main.js"
+  },
+  "author": "",
+  "license": "ISC"
 }
