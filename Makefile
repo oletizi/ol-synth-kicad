@@ -39,7 +39,7 @@ CUTTER_DIAMETER := 2
 
 .PHONY := clean pcbs gcode
 
-all: gcode-post
+all: gcode-post dxf step
 
 xgcode: SHELL=zsh
 xgcode: gerbers $(GCODE)
