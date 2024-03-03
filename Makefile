@@ -110,7 +110,7 @@ step: $(STEP)
 build/%.step: %.kicad_pcb
 	echo "Generate step: $0 from $^ with $(kicad)"
 	mkdir -p $(dir $@)
-	$(kicad) pcb export step --output $@ --force "$^"
+	$(kicad) pcb export step --output $@ --force --include-tracks --include-zones "$^"
 
 pcbs: $(PCBS)
 	echo "PCBS: $(PCBS)"
