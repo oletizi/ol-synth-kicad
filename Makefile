@@ -5,6 +5,7 @@ GERBERS_FRONT := $(addprefix build/,$(addsuffix -F_Cu.gbr,$(basename $(PCBS))))
 GERBERS_BACK := $(addprefix build/,$(addsuffix -B_Cu.gbr,$(basename $(PCBS))))
 GERBERS_EDGE_CUTS := $(addprefix build/,$(addsuffix -Edge_Cuts.gbr,$(basename $(PCBS))))
 GERBERS_ALL := $(GERBERS_FRONT) $(GERBERS_BACK) $(GERBERS_EDGE_CUTS)
+DXF := $(addprefix build/,$(addsuffix .dxf,$(basename $(PCBS))))
 GCODE := $(addsuffix _front.ngc,$(basename $(GERBERS_FRONT)))
 
 LAYERS := F.Cu,B.Cu,F.Silkscreen,B.Silkscreen,Edge.Cuts
@@ -57,7 +58,8 @@ xgcode: gerbers $(GCODE)
 		--output-dir $$gbr:h \
 		--front $$gbr \
 		--back $${base}-B_Cu.gbr \
-		--mirror-axis 0 \
+		--mirror-yaxis 1 \
+		--outline $${base}-Edge_Cuts.gbr \
 		--mill-diameters=$(MILL_DIAMETERS) \
 		--isolation-width=$(ISOLATION_WIDTH) \
 		--zwork $(ZWORK) \
@@ -97,6 +99,13 @@ build/%-F_Cu.gbr: %.kicad_pcb
 	mkdir -p $(dir $@)
 	$(kicad) pcb export gerbers --output $(dir $@) --layers $(LAYERS) --no-protel-ext --no-x2 $^
 	$(kicad) pcb export drill --drill-origin plot -u mm --output $(dir $@) $^
+
+dxf: $(DXF)
+
+build/%.dxf: %.kicad_pcb
+	echo "Generate dfx: $@ from $^ with $(kicad)"
+	mkdir -p $(dir $@)
+	$(kicad) pcb export dxf --layers $(LAYERS) --output $@ "$^"
 
 pcbs: $(PCBS)
 	echo "PCBS: $(PCBS)"
