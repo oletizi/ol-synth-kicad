@@ -6,6 +6,7 @@ GERBERS_BACK := $(addprefix build/,$(addsuffix -B_Cu.gbr,$(basename $(PCBS))))
 GERBERS_EDGE_CUTS := $(addprefix build/,$(addsuffix -Edge_Cuts.gbr,$(basename $(PCBS))))
 GERBERS_ALL := $(GERBERS_FRONT) $(GERBERS_BACK) $(GERBERS_EDGE_CUTS)
 DXF := $(addprefix build/,$(addsuffix .dxf,$(basename $(PCBS))))
+STEP := $(addprefix build/,$(addsuffix .step,$(basename $(PCBS))))
 GCODE := $(addsuffix _front.ngc,$(basename $(GERBERS_FRONT)))
 
 LAYERS := F.Cu,B.Cu,F.Silkscreen,B.Silkscreen,Edge.Cuts
@@ -93,7 +94,6 @@ gcode-post: xgcode
 	done; \
 
 gerbers: $(GERBERS_ALL)
-
 build/%-F_Cu.gbr: %.kicad_pcb
 	echo "Generate gerbers: $@ from $^ with $(kicad)"
 	mkdir -p $(dir $@)
@@ -101,11 +101,16 @@ build/%-F_Cu.gbr: %.kicad_pcb
 	$(kicad) pcb export drill --drill-origin plot -u mm --output $(dir $@) $^
 
 dxf: $(DXF)
-
 build/%.dxf: %.kicad_pcb
 	echo "Generate dfx: $@ from $^ with $(kicad)"
 	mkdir -p $(dir $@)
 	$(kicad) pcb export dxf --layers $(LAYERS) --output $@ "$^"
+
+step: $(STEP)
+build/%.step: %.kicad_pcb
+	echo "Generate step: $0 from $^ with $(kicad)"
+	mkdir -p $(dir $@)
+	$(kicad) pcb export step --output $@ --force "$^"
 
 pcbs: $(PCBS)
 	echo "PCBS: $(PCBS)"
