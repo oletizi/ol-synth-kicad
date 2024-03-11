@@ -13,12 +13,12 @@ G01 F150.00000 (Feedrate)
 G00 Z5.00000 (Retract to tool change height)
 T1
 M5        (Spindle stop.)
-(Suppressed: G04 P1.00000)
+(Suppressed: G04)
 (MSG, Change tool bit to drill size 1.00000mm)
 M6        (Tool change.)
 M0        (Temporary machine stop.)
 M3        (Spindle on clockwise.)
-(Suppressed: G04 P1.00000)
+(Suppressed: G04)
 G00 Z5.00000
 
 G0 X35.14500 Y103.62500
@@ -360,7 +360,7 @@ G1 Z5.00000 F75.00000
 G00 Z5.000000 ( All done -- retract )
 
 M5      (Spindle off.)
-(Suppressed: G04 P1.000000)
+(Suppressed: G04)
 M9      (Coolant off.)
 M2      (Program end.)
 

@@ -90,7 +90,7 @@ drl:
 gcode-post: xgcode
 	for gc in build/**/*.ngc; do \
   		echo "Postprocessing: $$gc"; \
-		cat $$gc | sed -e "s/^\(G04.*\)/\(Suppressed: \1\)/g" | sed -e "s/^\(G64.*\)/\(Suppressed: \1\)/g" > $${gc:r}.nc; \
+		cat $$gc | sed -e "s/^\(G04.*\)/\(Suppressed: G04\)/g" | sed -e "s/^\(G64.*\)/\(Suppressed: G64 \)/g" > $${gc:r}.nc; \
 	done; \
 
 gerbers: $(GERBERS_ALL)
