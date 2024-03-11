@@ -39,7 +39,7 @@ CUTTER_DIAMETER := 2
 
 .PHONY := clean pcbs gcode
 
-all: gcode-post dxf step
+all: gcode-post dxf #step
 
 xgcode: SHELL=zsh
 xgcode: gerbers $(GCODE)
@@ -61,11 +61,6 @@ xgcode: gerbers $(GCODE)
 		--back $${base}-B_Cu.gbr \
 		--mirror-yaxis 1 \
 		--software custom \
-		--al-front \
-		--al-back \
-		--al-x 5 \
-		--al-y 5 \
-		--al-probefeed 50 \
 		--outline $${base}-Edge_Cuts.gbr \
 		--mill-diameters=$(MILL_DIAMETERS) \
 		--isolation-width=$(ISOLATION_WIDTH) \
