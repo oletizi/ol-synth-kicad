@@ -60,6 +60,12 @@ xgcode: gerbers $(GCODE)
 		--front $$gbr \
 		--back $${base}-B_Cu.gbr \
 		--mirror-yaxis 1 \
+		--software custom \
+		--al-front \
+		--al-back \
+		--al-x 5 \
+		--al-y 5 \
+		--al-probefeed 50 \
 		--outline $${base}-Edge_Cuts.gbr \
 		--mill-diameters=$(MILL_DIAMETERS) \
 		--isolation-width=$(ISOLATION_WIDTH) \
@@ -89,8 +95,7 @@ drl:
 gcode-post: xgcode
 	for gc in build/**/*.ngc; do \
   		echo "Postprocessing: $$gc"; \
-		sed -i -e "s/^\(G04.*\)/\(Suppressed: \1\)/g" $$gc; \
-		sed -i -e "s/^\(G64.*\)/\(Suppressed: \1\)/g" $$gc; \
+		cat $$gc | sed -e "s/^\(G04.*\)/\(Suppressed: \1\)/g" | sed -e "s/^\(G64.*\)/\(Suppressed: \1\)/g" > $${gc:r}.nc; \
 	done; \
 
 gerbers: $(GERBERS_ALL)
