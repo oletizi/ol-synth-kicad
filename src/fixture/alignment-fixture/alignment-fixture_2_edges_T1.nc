@@ -1,6 +1,7 @@
 (alignment-fixture)
 (edges)
 M8
+S5000 M3
 G0 X4.0866 Y0.0158
 G1 Z0.6 F39.37
 Z0.2
